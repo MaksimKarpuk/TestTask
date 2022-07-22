@@ -1,5 +1,8 @@
 <template>
-  <div @click="getPersons">Click me</div>
+  <div>
+    <div @click="getPersons">Get</div>
+    <div @click="postPersons">Post</div>
+  </div>
 </template>
 
 <script>
@@ -9,6 +12,13 @@ export default {
     async getPersons() {
       try {
         await this.$store.dispatch("getPersons");
+      } catch (error) {
+        console.log("error");
+      }
+    },
+    async postPersons(user) {
+      try {
+        await this.$store.dispatch("postPersons");
       } catch (error) {
         console.log("error");
       }
