@@ -1,18 +1,34 @@
 <template>
-  <div>
-    <button @click="getPersons" :class="$style.button">Get Persons</button>
-    <button @click="postPerson" :class="$style.button">Post Persons</button>
-    <div v-for="(item, index) in $store.state.persons.persons" :key="item">
-      <div>{{ index + 1 + ") " }}</div>
-      <div>{{ this.firstName }}</div>
-      <input type="text" v-model="newFirstName" />
-      <div>{{ this.secondName }}</div>
-      <input type="text" v-model="newSecondName" />
-      <button @click="deletePerson(item._id)">Delete Persons</button>
+  <div :class="$style.wrapper">
+    <div :class="$style.buttons">
+      <button @click="getPersons" :class="$style.button">Get Persons</button>
+      <button @click="postPerson" :class="$style.button">Post Persons</button>
     </div>
-    <div>
-      <input type="text" v-model="firstName" />
-      <input type="text" v-model="secondName" />
+    <div :class="$style.inputs">
+      <input type="text" v-model="firstName" placeholder="firstName" />
+      <input type="text" v-model="secondName" placeholder="secondName" />
+    </div>
+    <div
+      v-for="(item, index) in $store.state.persons.persons"
+      :key="item"
+      :class="$style.data"
+    >
+      <div>{{ index + 1 + ") " }}</div>
+      <div @click="openInput()">{{ item.firstName }}</div>
+      <input
+        type="text"
+        v-model="newFirstName"
+        :class="[{ [$style.newInput]: isVisible }]"
+      />
+      <div @click="openInput()">{{ item.secondName }}</div>
+      <input
+        type="text"
+        v-model="newSecondName"
+        :class="[{ [$style.newInput]: isVisible }]"
+      />
+      <button :class="$style.button" @click="deletePerson(item._id)">
+        Delete Persons
+      </button>
     </div>
   </div>
 </template>
@@ -25,9 +41,17 @@ export default {
     return {
       firstName: "",
       secondName: "",
+      newFirstName: "",
+      newSecondName: "",
+      isVisible: true,
     };
   },
   name: "App",
+  computed: {
+    openInput() {
+      this.isVisible != this.isVisible;
+    },
+  },
   methods: {
     async getPersons() {
       try {
@@ -59,7 +83,27 @@ export default {
 </script>
 
 <style lang="scss"  module>
-.button{
-  
+.wrapper {
+  margin: 1rem;
+  .buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    .button {
+      padding: 0.5rem 1rem;
+    }
+  }
+  .inputs {
+    display: flex;
+    gap: 1rem;
+    input {
+      height: 1.5rem;
+    }
+  }
+  .data {
+    .newInput {
+      display: none;
+    }
+  }
 }
 </style>
