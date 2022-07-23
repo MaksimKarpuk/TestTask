@@ -1,16 +1,18 @@
 import Core from "../../repository";
 export default {
   state: {
-    persons: null,
-    content : hello
+    persons: [],
   },
   getters: {},
   mutations: {
     setPersons(state, value) {
       state.persons = value;
     },
-    postPersons(state, value) {
-      state.content = value;
+    postPerson(state, value) {
+      state.persons.push(value);
+    },
+    deletePerson(state, id) {
+      state.persons = state.persons.filter((pers) => pers._id !== id);
     },
   },
   actions: {
@@ -24,15 +26,21 @@ export default {
       }
       return { value, error };
     },
-    async postPersons({ commit }) {
-      const { value, error } = await Core.Persons.postPersons(user);
+
+    async postPerson({ commit }, user) {
+      const { value, error } = await Core.Persons.postPerson(user);
       console.log(value);
       if (error || !value) {
         console.log("Error");
       } else {
-        commit("postPersons", value);
+        commit("postPerson", value);
       }
       return { value, error };
+    },
+
+    async deletePerson({ commit }, id) {
+      await Core.Persons.deletePerson(id);
+      commit("deletePerson", id);
     },
   },
 };
