@@ -4,7 +4,7 @@ class Connector {
   connector;
   constructor() {
     this.connector = axios.create({
-      baseURL: "https://crudcrud.com/api/88e887f38cbc4286a375792cb8842d0b",
+      baseURL: "https://crudcrud.com/api/7141fdfae7ed49ca9c3a061dd3cb6887",
     });
   }
 }

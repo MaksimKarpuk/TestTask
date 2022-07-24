@@ -1,8 +1,15 @@
 <template>
   <div :class="$style.wrapper">
     <div :class="$style.buttons">
-      <button @click="getPersons" :class="$style.button">Get Persons</button>
-      <button @click="postPerson" :class="$style.button">Post Persons</button>
+      <button @click="getPersons" :class="$style.button" :disabled="isEditNow">
+        Get Persons
+      </button>
+      <button @click="postPerson" :class="$style.button" :disabled="isEditNow">
+        Post Persons
+      </button>
+      <button @click="changePerson" :class="$style.button" v-if="isEditNow">
+        Update Person
+      </button>
     </div>
     <div :class="$style.inputs">
       <input type="text" v-model="firstName" placeholder="firstName" />
@@ -13,27 +20,17 @@
       :key="item"
       :class="$style.data"
     >
-      <div>{{ index + 1 + ") " }}</div>
-      <div @click="openInput()">{{ item.firstName }}</div>
-      <input
-        type="text"
-        v-model="newFirstName"
-        :class="[{ [$style.newInput]: isVisible }]"
-      />
-      <div @click="openInput()">{{ item.secondName }}</div>
-      <input
-        type="text"
-        v-model="newSecondName"
-        :class="[{ [$style.newInput]: isVisible }]"
-      />
+      <div>{{ index + 1 + ") " }} {{ item.firstName }}</div>
+      <div>{{ item.secondName }}</div>
       <button :class="$style.button" @click="deletePerson(item._id)">
-        Delete Persons
+        Delete Person
+      </button>
+      <button :class="$style.button" @click="setChosenPerson(item)">
+        Edit Person
       </button>
     </div>
   </div>
 </template>
-
-
 
 <script>
 export default {
@@ -41,17 +38,11 @@ export default {
     return {
       firstName: "",
       secondName: "",
-      newFirstName: "",
-      newSecondName: "",
-      isVisible: true,
+      isEditNow: false,
+      chosenPerson: {},
     };
   },
   name: "App",
-  computed: {
-    openInput() {
-      this.isVisible != this.isVisible;
-    },
-  },
   methods: {
     async getPersons() {
       try {
@@ -71,38 +62,74 @@ export default {
         console.log("error");
       }
     },
-    async deletePerson() {
+    async deletePerson(id) {
       try {
         await this.$store.dispatch("deletePerson", id);
       } catch (error) {
         console.log("error");
       }
     },
+    async changePerson() {
+      let user = {
+        id: this.chosenPerson._id,
+        firstName: this.firstName,
+        secondName: this.secondName,
+      };
+      try {
+        if (user.firstName && user.secondName) {
+          await this.$store.dispatch("changePerson", user);
+          this.firstName = "";
+          this.secondName = "";
+        }
+      } catch (error) {
+        console.log("error");
+      }
+      this.isEditNow = false;
+    },
+    setChosenPerson(item) {
+      this.chosenPerson = item;
+      this.firstName = item.firstName;
+      this.secondName = item.secondName;
+      this.isEditNow = true;
+    },
+  },
+  mounted() {
+    this.getPersons();
   },
 };
 </script>
 
 <style lang="scss"  module>
-.wrapper {
-  margin: 1rem;
-  .buttons {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    .button {
-      padding: 0.5rem 1rem;
+body {
+  margin: 0;
+  .wrapper {
+    min-height: 100vh;
+    background: linear-gradient(104.11deg, #ff7e5f 14.52%, #feb567 87.26%);
+    padding: 1rem;
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      .button {
+        padding: 0.5rem 1rem;
+      }
     }
-  }
-  .inputs {
-    display: flex;
-    gap: 1rem;
-    input {
-      height: 1.5rem;
+    .inputs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      input {
+        height: 1.5rem;
+      }
     }
-  }
-  .data {
-    .newInput {
-      display: none;
+    .data {
+      border: 0.0625rem solid black;
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 2rem;
+      .newInput {
+        display: none;
+      }
     }
   }
 }

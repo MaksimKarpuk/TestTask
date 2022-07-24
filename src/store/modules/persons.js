@@ -14,11 +14,17 @@ export default {
     deletePerson(state, id) {
       state.persons = state.persons.filter((pers) => pers._id !== id);
     },
+    changePerson(state, user) {
+      state.persons = state.persons.map((pers) =>
+        pers._id === user.id
+          ? { ...pers, firstName: user.firstName, secondName: user.secondName }
+          : pers
+      );
+    },
   },
   actions: {
     async getPersons({ commit }) {
       const { value, error } = await Core.Persons.getPersons();
-      console.log(value);
       if (error || !value) {
         console.log("Error");
       } else {
@@ -29,7 +35,6 @@ export default {
 
     async postPerson({ commit }, user) {
       const { value, error } = await Core.Persons.postPerson(user);
-      console.log(value);
       if (error || !value) {
         console.log("Error");
       } else {
@@ -41,6 +46,10 @@ export default {
     async deletePerson({ commit }, id) {
       await Core.Persons.deletePerson(id);
       commit("deletePerson", id);
+    },
+    async changePerson({ commit }, user) {
+      await Core.Persons.changePerson(user);
+      commit("changePerson", user);
     },
   },
 };
