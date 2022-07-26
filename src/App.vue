@@ -1,34 +1,73 @@
 <template>
   <div :class="$style.wrapper">
     <div :class="$style.buttons">
-      <button @click="getPersons" :class="$style.button" :disabled="isEditNow">
-        Get Persons
-      </button>
-      <button @click="postPerson" :class="$style.button" :disabled="isEditNow">
-        Post Persons
-      </button>
-      <button @click="changePerson" :class="$style.button" v-if="isEditNow">
-        Update Person
-      </button>
+      <v-btn
+        elevation="2"
+        @click="getPersons"
+        :class="$style.button"
+        :disabled="isEditNow"
+        >Get Persons</v-btn
+      >
+      <v-btn
+        elevation="2"
+        @click="postPerson"
+        :class="$style.button"
+        :disabled="isEditNow"
+        >Post Persons</v-btn
+      >
+      <v-btn
+        elevation="2"
+        @click="changePerson"
+        :class="$style.button"
+        v-if="isEditNow"
+        >Update Person</v-btn
+      >
     </div>
     <div :class="$style.inputs">
-      <input type="text" v-model="firstName" placeholder="firstName" />
-      <input type="text" v-model="secondName" placeholder="secondName" />
+      <v-text-field label="FirstName" v-model="firstName"></v-text-field>
+      <v-text-field label="SecondName" v-model="secondName"></v-text-field>
     </div>
-    <div
+    <v-container>
+      <v-col
+        v-for="(item, index) in $store.state.persons.persons"
+        :key="item"
+        :class="$style.data"
+      >
+        <v-card>
+          <div>{{ index + 1 + ") " }} {{ item.firstName }}</div>
+          <div>{{ item.secondName }}</div>
+          <v-btn
+            elevation="2"
+            :class="$style.button"
+            @click="deletePerson(item._id)"
+            >Delete Person</v-btn
+          >
+          <v-btn
+            elevation="2"
+            :class="$style.button"
+            @click="setChosenPerson(item)"
+            >Edit Person</v-btn
+          >
+        </v-card>
+      </v-col>
+    </v-container>
+    <!-- <v-banner
       v-for="(item, index) in $store.state.persons.persons"
       :key="item"
       :class="$style.data"
     >
       <div>{{ index + 1 + ") " }} {{ item.firstName }}</div>
       <div>{{ item.secondName }}</div>
-      <button :class="$style.button" @click="deletePerson(item._id)">
-        Delete Person
-      </button>
-      <button :class="$style.button" @click="setChosenPerson(item)">
-        Edit Person
-      </button>
-    </div>
+      <v-btn
+        elevation="2"
+        :class="$style.button"
+        @click="deletePerson(item._id)"
+        >Delete Person</v-btn
+      >
+      <v-btn elevation="2" :class="$style.button" @click="setChosenPerson(item)"
+        >Edit Person</v-btn
+      >
+    </v-banner> -->
   </div>
 </template>
 
@@ -58,6 +97,8 @@ export default {
       };
       try {
         await this.$store.dispatch("postPerson", user);
+        this.firstName = "";
+        this.secondName = "";
       } catch (error) {
         console.log("error");
       }
@@ -115,21 +156,12 @@ body {
       }
     }
     .inputs {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      input {
-        height: 1.5rem;
-      }
+      max-width: 30rem;
     }
     .data {
-      border: 0.0625rem solid black;
       margin-bottom: 1rem;
       display: flex;
       gap: 2rem;
-      .newInput {
-        display: none;
-      }
     }
   }
 }
